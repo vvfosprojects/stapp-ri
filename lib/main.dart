@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:splashscreen/splashscreen.dart';
+import './module_container.dart';
 
-import 'credits.dart';
-import 'homepage.dart';
-import 'operation_page.dart';
+import './credits.dart';
+import './homepage.dart';
+import './operation_page.dart';
 
-void main() => runApp(StatRiApp());
+void main() {
+  // Initialization Dependency Injection
+  final injector = ModuleContainer().initialise(Injector.getInjector());
+  runApp(StatRiApp());
+}
 
 class StatRiApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -18,7 +24,7 @@ class StatRiApp extends StatelessWidget {
       routes: {
         '/homepage': (context) => Homepage(),
         '/operation': (context) => OperationPage(),
-        '/credits' : (context) => Credits()
+        '/credits': (context) => Credits()
       },
       title: 'Stapp-RI APP',
       theme: ThemeData(

@@ -1,18 +1,44 @@
+import './models/operation.dart';
 import 'package:flutter/material.dart';
-
-import 'models/operation.dart';
-import 'models/operation_status.dart';
-import 'widgets/conf_drawer.dart';
+import 'package:flutter_simple_dependency_injection/injector.dart';
+import './ports/command_operation_service.dart';
+import './models/operation_status.dart';
+import './ports/query_operation_service.dart';
+import './widgets/conf_drawer.dart';
 
 class Homepage extends StatefulWidget {
   Homepage({Key key, this.title}) : super(key: key);
   final String title;
-
+  
   @override
   _HomepageState createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
+
+  final injector = Injector.getInjector();
+
+  Operation operation = Operation(title: "t", description: "d", date: new DateTime.now(), status: OperationStatus.LOCAL.toString(), );
+
+  void testInsert() async {
+    injector.get<CommandOperationService>().save(operation).then((id) {
+      print("Inserimento op id: $id");
+      testRead(id);
+    }); 
+  }
+
+  void testRead(int id) async {
+    injector.get<QueryOperationService>().read(id).then((op) {
+      print("OP: ${op.id} ${op.title} ${op.description} ${op.status} ${op.coordinates} ${op.date}");
+    }); 
+    injector.get<QueryOperationService>().readAll().then((ops) {
+      ops.map((op) {
+        print("OP: ${op.id} ${op.title} ${op.description} ${op.status} ${op.coordinates} ${op.date}");
+      }).toList();
+      
+    }); 
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +48,7 @@ class _HomepageState extends State<Homepage> {
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {testInsert();},
                 child: Icon(
                   Icons.search,
                   size: 26.0,
