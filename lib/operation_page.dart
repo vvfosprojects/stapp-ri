@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class OperationPage extends StatefulWidget {
   @override
@@ -6,6 +9,25 @@ class OperationPage extends StatefulWidget {
 }
 
 class _OperationPageState extends State<OperationPage> {
+  File _image;
+  File _video;
+
+  Future _pickImage(ImageSource source) async {
+    var image = await ImagePicker.pickImage(source: source);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  Future _pickVideo(ImageSource source) async {
+    var video = await ImagePicker.pickVideo(source: source);
+
+    setState(() {
+      _video = video;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +114,10 @@ class _OperationPageState extends State<OperationPage> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(top: 5, left: 5,),
+                    padding: EdgeInsets.only(
+                      top: 5,
+                      left: 5,
+                    ),
                     margin: EdgeInsets.only(top: 15),
                     child: Row(
                       children: <Widget>[
@@ -115,44 +140,49 @@ class _OperationPageState extends State<OperationPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.photo_library,
-              color: Colors.black54,
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            FlatButton(
+              child: Icon(
+                Icons.photo_library,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                _pickImage(ImageSource.gallery);
+              },
             ),
-            title: Text('Gallery'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.mic,
-              color: Colors.black54,
+            FlatButton(
+              child: Icon(
+                Icons.mic,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                _pickImage(ImageSource.gallery);
+              },
             ),
-            title: Text('Audio'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.videocam,
-              color: Colors.black54,
+            FlatButton(
+              child: Icon(
+                Icons.videocam,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                _pickVideo(ImageSource.camera);
+              },
             ),
-            title: Text('Video'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.photo_camera,
-              color: Colors.black54,
-            ),
-            title: Text('Foto'),
-          ),
-        ],
-        currentIndex: 1,
-        type: BottomNavigationBarType.shifting,
-        fixedColor: Colors.black54,
-        unselectedLabelStyle: TextStyle(color: Colors.black54),
-        showUnselectedLabels: true,
-        unselectedItemColor: Colors.black54,
-        onTap: (_) {},
+            FlatButton(
+              child: Icon(
+                Icons.photo_camera,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                _pickImage(ImageSource.camera);
+              },
+            )
+          ],
+        ),
+        
       ),
     );
   }
