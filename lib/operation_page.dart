@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:stapp_ri/widgets/audio_recorder.dart';
 
 class OperationPage extends StatefulWidget {
   @override
@@ -10,11 +11,14 @@ class OperationPage extends StatefulWidget {
 }
 
 class _OperationPageState extends State<OperationPage> {
+  bool _showModalAudio = false;
   File _image;
   File _video;
 
   List<Asset> images = List<Asset>();
   String _error;
+
+  void _registerAudio() async {}
 
   Future _pickImage(ImageSource source) async {
     var image = await ImagePicker.pickImage(source: source);
@@ -25,7 +29,6 @@ class _OperationPageState extends State<OperationPage> {
   }
 
   Future<void> _pickImages() async {
-
     List<Asset> resultList;
     String error;
 
@@ -187,7 +190,9 @@ class _OperationPageState extends State<OperationPage> {
                 color: Colors.black54,
               ),
               onPressed: () {
-                _pickImage(ImageSource.gallery);
+                 showDialog(
+                  child: AudioRecorder(), context: context,
+                );
               },
             ),
             FlatButton(
@@ -210,7 +215,6 @@ class _OperationPageState extends State<OperationPage> {
             )
           ],
         ),
-        
       ),
     );
   }
