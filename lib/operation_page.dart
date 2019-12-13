@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class OperationPage extends StatefulWidget {
   @override
@@ -12,11 +13,38 @@ class _OperationPageState extends State<OperationPage> {
   File _image;
   File _video;
 
+  List<Asset> images = List<Asset>();
+  String _error;
+
   Future _pickImage(ImageSource source) async {
     var image = await ImagePicker.pickImage(source: source);
 
     setState(() {
       _image = image;
+    });
+  }
+
+  Future<void> _pickImages() async {
+
+    List<Asset> resultList;
+    String error;
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 10,
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    // if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+      if (error == null) _error = 'No Error Dectected';
     });
   }
 
@@ -150,7 +178,7 @@ class _OperationPageState extends State<OperationPage> {
                 color: Colors.black54,
               ),
               onPressed: () {
-                _pickImage(ImageSource.gallery);
+                _pickImages();
               },
             ),
             FlatButton(
