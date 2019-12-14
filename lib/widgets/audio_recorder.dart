@@ -3,14 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
+import 'package:stapp_ri/models/media.dart';
 
 class AudioRecorder extends StatefulWidget {
-
-  Function callback;
+  Function _callback;
 
   AudioRecorder();
 
-  AudioRecorder.withCallback({callback});
+  AudioRecorder.withCallback({callback}){
+    this._callback = callback;
+  }
 
   @override
   _AudioRecorderState createState() => new _AudioRecorderState();
@@ -31,6 +33,12 @@ class _AudioRecorderState extends State<AudioRecorder> {
   double slider_current_position = 0.0;
   double max_duration = 1.0;
 
+  String _fileName;
+  String _filePath;
+  Media _media;
+
+  List<Media> _opAudioFiles;
+
   @override
   void initState() {
     super.initState();
@@ -38,19 +46,33 @@ class _AudioRecorderState extends State<AudioRecorder> {
     flutterSound.setSubscriptionDuration(0.01);
     flutterSound.setDbPeakLevelUpdate(0.8);
     flutterSound.setDbLevelEnabled(true);
-//    initializeDateFormatting();
+    _opAudioFiles = List<Media>();
   }
 
   void startRecorder() async {
     try {
-      String path = await flutterSound.startRecorder(null);
-      print('startRecorder: $path');
+      stopPlayer();
+      String fileName =
+          DateTime.now().millisecondsSinceEpoch.toString() + '.aac';
+      setState(() {
+        _media = Media(name: fileName);
+      });
+
+      String path =
+          await flutterSound.startRecorder(_media.name).catchError((error) {
+        print(error);
+      });
+
+      _media.path = path;
+      _opAudioFiles.add(_media);
+      widget._callback(_opAudioFiles);
+      print('startRecorder: ${_media.path}');
 
       _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {
         DateTime date = new DateTime.fromMillisecondsSinceEpoch(
             e.currentPosition.toInt(),
             isUtc: true);
-        String txt = DateFormat('mm:ss:SS', 'pt_BR').format(date);
+        String txt = DateFormat('mm:ss:SS').format(date);
 
         this.setState(() {
           this._recorderTxt = txt.substring(0, 8);
@@ -95,7 +117,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 
   void startPlayer() async {
-    String path = await flutterSound.startPlayer(null);
+    print(_media.path);
+    String path = await flutterSound.startPlayer(_media.path);
     await flutterSound.setVolume(1.0);
     print('startPlayer: $path');
 
@@ -108,7 +131,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           DateTime date = new DateTime.fromMillisecondsSinceEpoch(
               e.currentPosition.toInt(),
               isUtc: true);
-          String txt = DateFormat('mm:ss:SS', 'pt_BR').format(date);
+          String txt = DateFormat('mm:ss:SS').format(date);
           this.setState(() {
             this._isPlaying = true;
             this._playerTxt = txt.substring(0, 8);
@@ -138,7 +161,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 
   void pausePlayer() async {
-    String result = await flutterSound.pausePlayer();
+    String result = await flutterSound.pausePlayer().catchError((onError) {
+      print(onError);
+    });
     print('pausePlayer: $result');
   }
 
@@ -155,123 +180,157 @@ class _AudioRecorderState extends State<AudioRecorder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Audio Recorder'),
-        ),
-        body: ListView(
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(top: 24.0, bottom: 16.0),
-                  child: Text(
-                    this._recorderTxt,
-                    style: TextStyle(
-                      fontSize: 48.0,
-                      color: Colors.black,
-                    ),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Registratore Audio'),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 24.0, bottom: 16.0),
+                child: Text(
+                  this._recorderTxt,
+                  style: TextStyle(
+                    fontSize: 48.0,
+                    color: Colors.black,
                   ),
                 ),
-                _isRecording
-                    ? LinearProgressIndicator(
-                        value: 100.0 / 160.0 * (this._dbLevel ?? 1) / 100,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                        backgroundColor: Colors.red,
-                      )
-                    : Container()
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Container(
-                  width: 56.0,
-                  height: 56.0,
-                  margin: EdgeInsets.all(10.0),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      if (!this._isRecording) {
-                        return this.startRecorder();
-                      }
-                      this.stopRecorder();
-                    },
-                    child:
-                        this._isRecording ? Icon(Icons.stop) : Icon(Icons.mic),
+              ),
+              _isRecording
+                  ? LinearProgressIndicator(
+                      value: 100.0 / 160.0 * (this._dbLevel ?? 1) / 100,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      backgroundColor: Colors.red,
+                    )
+                  : Container()
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                width: 64.0,
+                height: 64.0,
+                margin: EdgeInsets.all(10.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    if (!this._isRecording) {
+                      return this.startRecorder();
+                    }
+                    this.stopRecorder();
+                  },
+                  child: this._isRecording ? Icon(Icons.stop) : Icon(Icons.mic),
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 30.0, bottom: 16.0),
+                child: Text(
+                  this._playerTxt,
+                  style: TextStyle(
+                    fontSize: 48.0,
+                    color: Colors.black,
                   ),
                 ),
-              ],
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(top: 60.0, bottom: 16.0),
-                  child: Text(
-                    this._playerTxt,
-                    style: TextStyle(
-                      fontSize: 48.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Container(
-                  width: 56.0,
-                  height: 56.0,
-                  margin: EdgeInsets.all(8.0),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      startPlayer();
-                    },
-                    child: Icon(Icons.play_arrow),
-                  ),
-                ),
-                Container(
-                  width: 56.0,
-                  height: 56.0,
-                  margin: EdgeInsets.all(8.0),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      pausePlayer();
-                    },
-                    child: Icon(Icons.pause),
-                  ),
-                ),
-                Container(
-                  width: 56.0,
-                  height: 56.0,
-                  margin: EdgeInsets.all(8.0),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      stopPlayer();
-                    },
-                    child: Icon(Icons.stop),
-                  ),
-                ),
-              ],
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-            ),
-            Container(
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                width: 56.0,
                 height: 56.0,
+                margin: EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    startPlayer();
+                  },
+                  child: Icon(Icons.play_arrow),
+                ),
+              ),
+              Container(
+                width: 56.0,
+                height: 56.0,
+                margin: EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    pausePlayer();
+                  },
+                  child: Icon(Icons.pause),
+                ),
+              ),
+              Container(
+                width: 56.0,
+                height: 56.0,
+                margin: EdgeInsets.all(8.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    stopPlayer();
+                  },
+                  child: Icon(Icons.stop),
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: 56.0,
+                width: MediaQuery.of(context).size.width,
                 child: Slider(
-                    value: slider_current_position,
-                    min: 0.0,
-                    max: max_duration,
-                    onChanged: (double value) async {
-                      await flutterSound.seekToPlayer(value.toInt());
-                    },
-                    divisions: max_duration.toInt()))
-          ],
-        ),
+                  value: slider_current_position,
+                  min: 0.0,
+                  max: max_duration,
+                  onChanged: (double value) async {
+                    seekToPlayer(value.toInt());
+                  },
+                  divisions: max_duration.toInt(),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: ListView(
+                  children:
+                      _opAudioFiles.map((element) => _tile(element)).toList(),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tile(Media media) => ListTile(
+        title: Text(media.name),
+        subtitle: Text(media.path),
+        leading: Icon(Icons.audiotrack),
+        onTap: () => _selectFileToPlay(media),
+        selected: media.path==_media.path,
       );
+
+  void _selectFileToPlay(Media media) {
+    _media = media;
   }
 }

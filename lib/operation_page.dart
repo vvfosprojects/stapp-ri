@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:stapp_ri/widgets/audio_recorder.dart';
 
+import 'models/media.dart';
+
 class OperationPage extends StatefulWidget {
   @override
   _OperationPageState createState() => _OperationPageState();
@@ -191,7 +193,7 @@ class _OperationPageState extends State<OperationPage> {
               ),
               onPressed: () {
                  showDialog(
-                  child: AudioRecorder(), context: context,
+                  child: AudioRecorder.withCallback(callback: audioCallback,), context: context,
                 );
               },
             ),
@@ -218,4 +220,9 @@ class _OperationPageState extends State<OperationPage> {
       ),
     );
   }
+
+  void audioCallback(List<Media> audios){
+    print(audios);
+  }
+
 }
