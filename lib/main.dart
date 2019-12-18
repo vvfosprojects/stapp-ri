@@ -23,14 +23,14 @@ class StatRiApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/homepage': (context) => Homepage(),
-        '/operation': (context) => OperationPage(),
+        '/operation': (context) => OperationPage(null),
         '/credits': (context) => Credits()
       },
-      title: 'Stapp-RI APP',
+      title: 'StSpp-RI APP',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: Splash(title: 'Stapp-RI - Interventi'),
+      home: Splash(title: 'StApp-RI - Interventi'),
     );
   }
 }

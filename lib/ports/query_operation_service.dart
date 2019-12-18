@@ -1,10 +1,10 @@
 
-import '../models/operation.dart';
+import '../models/emergency_operation.dart';
 
 abstract class QueryOperationService<M> {
 
-  Future<Operation> read(int id) async {}
+  Future<EmergencyOperation> read(int id) async {}
 
-  Future<List<Operation>> readAll() async {}
+  Future<List<EmergencyOperation>> readAll() async {}
 
 }

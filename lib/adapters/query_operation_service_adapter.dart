@@ -1,40 +1,64 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:stapp_ri/models/media.dart';
 import '../helpers/db_values.dart';
 
 import '../ports/query_operation_service.dart';
 import '../helpers/database_helpers.dart';
-import '../models/operation.dart';
+import '../models/emergency_operation.dart';
 
 class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
 
   DatabaseHelper helper = DatabaseHelper.instance;
 
   @override
-  Future<List<Operation>> readAll() async {
+  Future<List<EmergencyOperation>> readAll() async {
     Database db = await helper.database;
-    List<Operation> result = List();
+    List<EmergencyOperation> result = List();
     List<Map> maps = await db.query(DBValues.tableOperations,
         columns: [DBValues.opId, DBValues.opTitle, DBValues.opDescription, DBValues.opDate, DBValues.opStatus, DBValues.opCoordinates]);
     if (maps.length > 0) {
-      maps.forEach((map) => {
-        result.add(Operation.fromMap(map))
-      });
+      for(var emerop in maps){
+        EmergencyOperation eo = EmergencyOperation.fromMap(emerop);
+        if(eo.media == null) eo.media = List<Media>();
+        List<Media> medias =  await readMedia(eo.id);
+        if(medias != null) eo.media.addAll(medias);
+        result.add(eo);
+      }
     }
+    
     return result;
   }
 
   @override
-  Future<Operation> read(int id) async {
+  Future<EmergencyOperation> read(int id) async {
     Database db = await helper.database;
     List<Map> maps = await db.query(DBValues.tableOperations,
         columns: [DBValues.opId, DBValues.opTitle, DBValues.opDescription, DBValues.opDate, DBValues.opStatus, DBValues.opCoordinates],
         where: '${DBValues.opId} = ?',
         whereArgs: [id]);
-    if (maps.length > 0) {
-      return Operation.fromMap(maps.first);
+    if (maps.length > 0) {  
+        EmergencyOperation eo = EmergencyOperation.fromMap(maps.first);
+        if(eo.media == null) eo.media = List<Media>();
+        List<Media> medias =  await readMedia(eo.id);
+        eo.media.addAll(medias);
+      return eo;
     }
     return null;
   }
 
+  Future<List<Media>> readMedia(int id) async {
+    Database db = await helper.database;
+    List<Media> result = List<Media>();
+    List<Map> maps = await db.query(DBValues.tableMedia,
+        columns: [DBValues.mediaId, DBValues.mediaName, DBValues.mediaPath, DBValues.mediaOpId, DBValues.mediaType],
+        where: '${DBValues.mediaOpId} = ?',
+        whereArgs: [id]);
+    if (maps.length > 0) {
+      maps.forEach((map) => {
+        result.add(Media.fromMap(map))
+      });
+    }
+    return result;
+  }
 
 }

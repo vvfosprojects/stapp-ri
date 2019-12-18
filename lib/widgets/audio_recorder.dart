@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
 import 'package:stapp_ri/models/media.dart';
+import 'package:stapp_ri/models/media_type.dart';
 
 class AudioRecorder extends StatefulWidget {
   Function _callback;
@@ -54,8 +55,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
       stopPlayer();
       String fileName =
           DateTime.now().millisecondsSinceEpoch.toString() + '.aac';
+
       setState(() {
-        _media = Media(name: fileName);
+        _media = Media(name: fileName, type: MediaType.AUDIO.toString());
       });
 
       String path =

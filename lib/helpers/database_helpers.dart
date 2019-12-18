@@ -4,10 +4,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import './db_values.dart';
 
-
 // singleton class to manage the database
 class DatabaseHelper {
-
   // This is the actual database filename that is saved in the docs directory.
   static final _databaseName = DBValues.dbName;
   // Increment this version when you need to change the schema.
@@ -38,19 +36,26 @@ class DatabaseHelper {
   // SQL string to create the database
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-              CREATE TABLE ${DBValues.tableOperations} (
-                ${DBValues.opId} INTEGER PRIMARY KEY,
+              CREATE TABLE IF NOT EXISTS ${DBValues.tableOperations} (
+                ${DBValues.opId} INTEGER PRIMARY KEY AUTOINCREMENT,
                 ${DBValues.opTitle} TEXT NOT NULL,
                 ${DBValues.opDescription} TEXT NOT NULL,
                 ${DBValues.opDate} TEXT NOT NULL,
                 ${DBValues.opStatus} TEXT NOT NULL,
                 ${DBValues.opCoordinates} TEXT
-              );
-              CREATE TABLE ${DBValues.tableMedia} (
-                ${DBValues.mediaId} INTEGER PRIMARY KEY,
-                ${DBValues.mediaOpId} TEXT NOT NULL,
+              )
+              ''');
+
+    await db.execute('''
+              CREATE TABLE IF NOT EXISTS ${DBValues.tableMedia} (
+                ${DBValues.mediaId} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${DBValues.mediaOpId} INTEGER NOT NULL,
                 ${DBValues.mediaName} TEXT NOT NULL,
-                ${DBValues.mediaType} TEXT NOT NULL
+                ${DBValues.mediaPath} TEXT NOT NULL,
+                ${DBValues.mediaType} TEXT NOT NULL,
+                CONSTRAINT fk_opId
+                FOREIGN KEY (${DBValues.mediaId})
+                REFERENCES ${DBValues.tableOperations}(${DBValues.opId})
               )
               ''');
   }

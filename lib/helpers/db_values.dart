@@ -17,6 +17,7 @@ class DBValues {
   static const String mediaId = "_id";
   static const String mediaOpId = "opId";
   static const String mediaName = "name";
+  static const String mediaPath = "path";
   static const String mediaType = "type";
 
 }
