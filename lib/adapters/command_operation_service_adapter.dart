@@ -8,14 +8,12 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
   DatabaseHelper helper = DatabaseHelper.instance;
 
   @override
-  Future<int> delete(m) async {
+  Future<int> delete(id) async {
     Database db = await helper.database;
-    db.execute("BEGIN TRANSACTION");
     int result = await db.delete(DBValues.tableOperations,
-        where: '${DBValues.opId} = ?', whereArgs: [m.id]);
+        where: '${DBValues.opId} = ?', whereArgs: [id]);
     await db.delete(DBValues.tableMedia,
-        where: '${DBValues.mediaOpId} = ?', whereArgs: [m.id]);
-    db.execute("COMMIT TRANSACTION");
+        where: '${DBValues.mediaOpId} = ?', whereArgs: [id]);
     return result;
   }
 
@@ -23,7 +21,6 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
   Future<int> update(m) async {
     Database db = await helper.database;
     EmergencyOperation emOp = m as EmergencyOperation;
-    db.execute("BEGIN TRANSACTION");
     int opId = await db.update(DBValues.tableOperations, m.toMap(),
         where: '${DBValues.opId} = ?', whereArgs: [m.id]);
     var batch = db.batch();
@@ -37,7 +34,6 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
       }
     });
     batch.commit();
-    db.execute("COMMIT TRANSACTION");
     return opId;
   }
 
@@ -45,7 +41,6 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
   Future<int> insert(m) async {
     EmergencyOperation emOp = m as EmergencyOperation;
     Database db = await helper.database;
-    db.execute("BEGIN TRANSACTION");
     int opId = await db.insert(DBValues.tableOperations, emOp.toMap());
     var batch = db.batch();
     emOp.media.forEach((m) {
@@ -54,7 +49,6 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
       batch.insert(DBValues.tableMedia, m.toMap());
     });
     batch.commit();
-    db.execute("COMMIT TRANSACTION");
     return opId;
   }
 }

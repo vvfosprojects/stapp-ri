@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:stapp_ri/helpers/string_utils.dart';
 import 'package:stapp_ri/models/emergency_operation.dart';
 import 'package:stapp_ri/models/operation_status.dart';
 
 import '../operation_page.dart';
 
 class SlidealbeTile extends StatelessWidget {
-  
   final EmergencyOperation eOp;
-  Function deleteCalback;
-  Function uploadCalback;
+  final Function deleteCallback;
+  final Function uploadCalback;
 
-  SlidealbeTile(this.eOp, {this.deleteCalback, this.uploadCalback});
+  SlidealbeTile(this.eOp, {this.deleteCallback, this.uploadCalback});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class SlidealbeTile extends StatelessWidget {
           caption: 'Carica',
           color: Colors.indigo,
           icon: Icons.cloud_upload,
-          onTap: () => {},
+          onTap: () => uploadCalback(eOp),
         ),
       ],
       secondaryActions: <Widget>[
@@ -47,19 +47,19 @@ class SlidealbeTile extends StatelessWidget {
           caption: 'Delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => {},
+          onTap: () => deleteCallback(eOp.id),
         ),
       ],
     );
   }
 
   ListTile _tile(EmergencyOperation operation, context) => ListTile(
-        title: Text(operation.title,
+        title: Text(truncateString(operation.title, 40),
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 20,
             )),
-        subtitle: Text(operation.description),
+        subtitle: Text(truncateString(operation.description, 100)),
         onTap: () {
           Navigator.push(
             context,

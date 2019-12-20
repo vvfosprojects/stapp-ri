@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:multi_media_picker/multi_media_picker.dart' as multimediapicker;
 import 'package:stapp_ri/models/media_type.dart';
 import 'package:stapp_ri/widgets/audio_recorder.dart';
+import 'package:stapp_ri/widgets/confirm_action.dart';
 
 import 'models/media.dart';
 import 'models/emergency_operation.dart';
@@ -28,6 +29,10 @@ class _OperationPageState extends State<OperationPage> {
 
   final format = DateFormat("dd/MM/yyyy HH:mm");
 
+  var _isModified = false;
+
+  FocusNode _focusNode;
+
   EmergencyOperation currentOperation;
 
   int _picturesLen = 0;
@@ -36,6 +41,8 @@ class _OperationPageState extends State<OperationPage> {
 
   @override
   void initState() {
+    super.initState();
+    _focusNode = FocusNode();
     if (widget._operation != null) {
       currentOperation = widget._operation;
       currentOperation.media = currentOperation.media ?? List<Media>();
@@ -44,10 +51,16 @@ class _OperationPageState extends State<OperationPage> {
       currentOperation = EmergencyOperation(
           title: '',
           description: '',
-          date: null,
+          date: DateTime.now(),
           status: EmergencyOperationStatus.LOCAL.toString(),
           media: List<Media>());
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _focusNode.dispose();
   }
 
   void loadBadges() {
@@ -74,7 +87,7 @@ class _OperationPageState extends State<OperationPage> {
       Media media = Media(
           name: image.uri.path,
           path: image.path.substring(image.path.lastIndexOf("/") + 1),
-          type: MediaType.VIDEO.toString());
+          type: MediaType.PICTURE.toString());
 
       insertMediaIfNotPresent(media);
     });
@@ -86,6 +99,7 @@ class _OperationPageState extends State<OperationPage> {
 
     setState(() {
       if (images != null) {
+        _isModified = true;
         for (var img in images) {
           Media media = Media(
               name: img.uri.path,
@@ -129,8 +143,13 @@ class _OperationPageState extends State<OperationPage> {
     setState(() {
       print(media);
       this.currentOperation.media.addAll(media);
+      _isModified = true;
       loadBadges();
     });
+  }
+
+  Future<List<Media>> fetchMedia() async {
+    return await Future(() => currentOperation.media);
   }
 
   @override
@@ -140,7 +159,43 @@ class _OperationPageState extends State<OperationPage> {
         title: Text("StApp-RI - Intervento"),
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            _isModified
+                ? showDialog<ConfirmAction>(
+                    context: context,
+                    barrierDismissible:
+                        false, // user must tap button for close dialog!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Attenzione'),
+                        content: const Text(
+                            'Modifiche non salvate. Salvare prima di uscire?'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: const Text(
+                              'No',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop(ConfirmAction.CANCEL);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: const Text(
+                              'Si',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop(ConfirmAction.ACCEPT);
+                              saveOperation(context);
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      );
+                    },
+                  )
+                : Navigator.pop(context);
           },
           child: Icon(
             Icons.arrow_back,
@@ -192,6 +247,7 @@ class _OperationPageState extends State<OperationPage> {
                             initialValue: currentOperation.title,
                             onChanged: (String value) {
                               this.currentOperation.title = value.trim();
+                              _isModified = true;
                             },
                             textAlign: TextAlign.left,
                             decoration: InputDecoration(
@@ -214,12 +270,20 @@ class _OperationPageState extends State<OperationPage> {
                           width: MediaQuery.of(context).size.width,
                           padding: EdgeInsets.all(10),
                           child: TextFormField(
-                            minLines: 6,
-                            maxLines: 8,
+                            focusNode: _focusNode,
+                            //minLines: 6,
+                            maxLines: null,
+                            autofocus: false,
+                            textInputAction: TextInputAction.done,
                             textAlign: TextAlign.left,
                             initialValue: currentOperation.description,
                             onChanged: (String value) {
+                              _isModified = true;
                               this.currentOperation.description = value.trim();
+                            },
+                            onEditingComplete: () {
+                              _isModified = true;
+                              _focusNode.unfocus();
                             },
                             decoration: InputDecoration(
                               labelText: "Descrizione",
@@ -348,6 +412,39 @@ class _OperationPageState extends State<OperationPage> {
                 ],
               ),
             ),
+            new FutureBuilder<List<Media>>(
+              future: fetchMedia(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) print(snapshot.error);
+                return snapshot.hasData
+                    ? new GridView.count(
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        crossAxisCount: 4,
+                        childAspectRatio: 0.99,
+                        children: List.generate(snapshot.data.length, (index) {
+                          return Container(
+                            margin: EdgeInsets.all(8),
+                            child: FlatButton(
+                              onPressed: () {},
+                              child: Column(
+                                children: <Widget>[
+                                  Text((snapshot.data[index].type
+                                      .replaceAll("MediaType.", "")), style: TextStyle(fontSize: 10),),
+                                      Icon(Icons.flag),
+                                ],
+                              ),
+                            ),
+                            color: Colors.white,
+                          );
+                        }),
+                      )
+                    : new Center(child: new CircularProgressIndicator());
+              },
+            ),
+            Container(
+              height: 50,
+            )
           ],
         ),
       ),
@@ -358,7 +455,7 @@ class _OperationPageState extends State<OperationPage> {
         return FloatingActionButton(
             backgroundColor: Colors.lightGreen,
             onPressed: () {
-              saveOperation(context);
+              saveOperation(context, showSnackBar: true);
             },
             tooltip: 'Salva',
             child: Icon(Icons.save_alt));
@@ -414,9 +511,8 @@ class _OperationPageState extends State<OperationPage> {
     );
   }
 
-  void saveOperation(context) async {
+  void saveOperation(context, {showSnackBar}) async {
     if (_formKey.currentState.validate()) {
-      print(currentOperation.media.toList());
       if (this.currentOperation.id != null) {
         injector
             .get<CommandOperationService>()
@@ -432,17 +528,21 @@ class _OperationPageState extends State<OperationPage> {
           print("Inserimento operation id: $id");
         });
       }
-      final snackBar = SnackBar(content: Text('Salvataggio effettuato!'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      _isModified = false;
+      if (showSnackBar ?? false) {
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Salvataggio effettuato!')));
+      }
     }
   }
 
   void datepick(context, currentValue) async {
     final date = await showDatePicker(
-        context: context,
-        firstDate: DateTime(1900),
-        initialDate: currentValue ?? DateTime.now(),
-        lastDate: DateTime(2100));
+      context: context,
+      firstDate: DateTime(1900),
+      initialDate: currentValue ?? DateTime.now(),
+      lastDate: DateTime(2100),
+    );
     if (date != null) {
       final time = await showTimePicker(
         context: context,
@@ -450,8 +550,8 @@ class _OperationPageState extends State<OperationPage> {
       );
       var dateTime = DateTime(
           date.year, date.month, date.day, time?.hour ?? 0, time?.minute ?? 0);
-      this.currentOperation.date = dateTime;
       setState(() {
+        _isModified = true;
         this.currentOperation.date = dateTime;
       });
     }

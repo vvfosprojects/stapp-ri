@@ -1,4 +1,6 @@
-import 'package:stapp_ri/operation_page.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:stapp_ri/ports/command_operation_service.dart';
+import 'package:stapp_ri/widgets/confirm_action.dart';
 import 'package:stapp_ri/widgets/slidable_tile.dart';
 
 import './models/emergency_operation.dart';
@@ -61,43 +63,9 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  List<EmergencyOperation> _loadOperations;
-
   Future loadOperations() async {
     return await injector.get<QueryOperationService>().readAll();
   }
-
-  List<EmergencyOperation> _mockList() {
-    List<EmergencyOperation> result = new List<EmergencyOperation>();
-    result.add(new EmergencyOperation(
-        title: 'Incendio auto',
-        date: new DateTime.now(),
-        status: EmergencyOperationStatus.LOCAL.toString(),
-        description:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut odio cursus, volutpat augue et, dapibus erat....'));
-    result.add(new EmergencyOperation(
-        title: 'Apertura Porta',
-        date: new DateTime.now().add(Duration(days: 1)),
-        status: EmergencyOperationStatus.PARTIAL_UPLOAD.toString(),
-        description:
-            'Fusce faucibus nulla vitae arcu hendrerit, sed aliquam odio ornare.'));
-    result.add(new EmergencyOperation(
-        title: 'Fuga Gas',
-        date: new DateTime.now().add(Duration(days: 2)),
-        status: EmergencyOperationStatus.COMPLETED_UPLOAD.toString(),
-        description:
-            'Donec fermentum lobortis felis et tincidunt. Vivamus cursus scelerisque dignissim...'));
-    result.add(new EmergencyOperation(
-        title: 'Incendio Sterpaglia',
-        date: new DateTime.now().add(Duration(days: 3)),
-        status: EmergencyOperationStatus.COMPLETED_UPLOAD.toString(),
-        description: 'Praesent egestas sagittis sodales.'));
-    return result;
-  }
-
-  Widget _buildList() => ListView(
-        children: _mockList().map((element) => _tile(element)).toList(),
-      );
 
   Widget _buildListFromDB() => FutureBuilder(
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -109,7 +77,7 @@ class _HomepageState extends State<Homepage> {
               {
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
-                } else if(snapshot.data.length >0) {
+                } else if (snapshot.data.length > 0) {
                   return ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
@@ -117,7 +85,11 @@ class _HomepageState extends State<Homepage> {
                       return Column(
                         children: <Widget>[
                           //_tile(eOp)
-                          SlidealbeTile(eOp),
+                          SlidealbeTile(
+                            eOp,
+                            deleteCallback: deleteEO,
+                            uploadCalback: uploadEOp,
+                          ),
                         ],
                       );
                     },
@@ -134,31 +106,98 @@ class _HomepageState extends State<Homepage> {
         future: loadOperations(),
       );
 
-  ListTile _tile(EmergencyOperation operation) => ListTile(
-        title: Text(operation.title,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 20,
-            )),
-        subtitle: Text(operation.description),
-        isThreeLine: true,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OperationPage(operation),
+  void deleteEO(int id) async {
+    await injector.get<CommandOperationService>().delete(id).then((result) {
+      setState(() {
+        print("Eliminazione id: $result effettata");
+        loadOperations();
+      });
+    });
+  }
+
+  void uploadEOp(EmergencyOperation eOp) async {
+    // Scanning Bar Code or QR Code return content
+    showDialog<ConfirmAction>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+            width: MediaQuery.of(context).size.width * .74,
+            height: MediaQuery.of(context).size.width * .85,
+            child: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(top:10,),
+                  child: Text(
+                    'Inserisci codice OTP',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                TextField(
+                  keyboardType: TextInputType.number,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    FlatButton(
+                      child: Text(
+                        'Annulla',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop(ConfirmAction.CANCEL);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text(
+                        'Ok',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop(ConfirmAction.ACCEPT);
+                      },
+                    )
+                  ],
+                ),
+                Container( margin: EdgeInsets.only(top: 30), child: Text('Oppure', style: TextStyle(fontSize: 18))),
+                Container(
+                  margin: EdgeInsets.only(top: 10, bottom: 15),
+                  child: Text('Scansiona QRCode',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+                FlatButton(
+                  child: Icon(Icons.public, size: 40, color: Colors.indigo,),
+                  onPressed: () {
+                    Navigator.of(context).pop(ConfirmAction.ACCEPT);
+                    scan(eOp);
+                  },
+                ),
+              ],
+              ),
             ),
-          );
-        },
-        leading: Icon(
-          Icons.cloud_upload,
-          color: (operation.status ==
-                  EmergencyOperationStatus.COMPLETED_UPLOAD.toString())
-              ? Colors.green[500]
-              : operation.status == EmergencyOperationStatus.PARTIAL_UPLOAD.toString()
-                  ? Colors.orange[500]
-                  : Colors.red[500],
-          size: 30,
-        ),
-      );
+        );
+      },
+    );
+  }
+
+  void otp(eOp) {
+    //TODO
+    print("otp $eOp");
+  }
+
+  void scan(eOp) async {
+    String qrCode = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", false, ScanMode.QR);
+    sendHTTP(eOp, qrCode);
+  }
+
+  void sendHTTP(eOp, qrCode) {
+    print("Sending through HTTP $eOp");
+  }
 }

@@ -5,6 +5,6 @@ abstract class CommandOperationService<M> {
 
   Future<int> update(M m) async {}
 
-  Future<int> delete(M m) async {}
+  Future<int> delete(int id) async {}
 
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -326,7 +327,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Widget _tile(Media media) => ListTile(
         title: Text(media.name),
-        subtitle: Text(media.path),
+        subtitle: Platform.isAndroid ? Text(media.path): Text(''),
         leading: Icon(Icons.audiotrack),
         onTap: () => _selectFileToPlay(media),
         selected: media.path==_media.path,

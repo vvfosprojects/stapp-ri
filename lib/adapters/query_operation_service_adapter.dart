@@ -25,7 +25,6 @@ class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
         result.add(eo);
       }
     }
-    
     return result;
   }
 

@@ -17,57 +17,57 @@ class ConfDrawer extends StatelessWidget {
               Icons.arrow_back,
             ),
           ),
-          actions: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(right: 20.0),
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Icon(Icons.exit_to_app),
-                )),
-          ],
+          // actions: <Widget>[
+          //   Padding(
+          //       padding: EdgeInsets.only(right: 20.0),
+          //       child: GestureDetector(
+          //         onTap: () {},
+          //         child: Icon(Icons.exit_to_app),
+          //       )),
+          // ],
         ),
         body: Container(
           child: ListView(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(left: 15, top: 15),
-                            child: Text(
-                              "Utente",
-                              style: TextStyle(
-                                  fontStyle: FontStyle.italic, fontSize: 14),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(left: 15, top: 10),
-                            child: Icon(Icons.face),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 15, top: 10),
-                            child: Text(
-                              "Cognome Nome",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Divider(),
+              // Row(
+              //   children: <Widget>[
+              //     Column(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: <Widget>[
+              //         Row(
+              //           children: <Widget>[
+              //             Container(
+              //               padding: EdgeInsets.only(left: 15, top: 15),
+              //               child: Text(
+              //                 "Utente",
+              //                 style: TextStyle(
+              //                     fontStyle: FontStyle.italic, fontSize: 14),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //         Row(
+              //           children: <Widget>[
+              //             Container(
+              //               padding: EdgeInsets.only(left: 15, top: 10),
+              //               child: Icon(Icons.face),
+              //             ),
+              //             Container(
+              //               padding: EdgeInsets.only(left: 15, top: 10),
+              //               child: Text(
+              //                 "Cognome Nome",
+              //                 style: TextStyle(
+              //                     fontSize: 16, fontWeight: FontWeight.bold),
+              //               ),
+              //             ),
+              //           ],
+              //         )
+              //       ],
+              //     )
+              //   ],
+              // ),
+              // Divider(),
               Row(
                 children: <Widget>[
                   Column(

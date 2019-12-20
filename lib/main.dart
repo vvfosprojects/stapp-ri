@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:splashscreen/splashscreen.dart';
 import './module_container.dart';
@@ -18,6 +19,13 @@ class StatRiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('it'),
+      ],
       // Start the app with the "/" named route. In this case, the app starts
       // on the FirstScreen widget.
       initialRoute: '/',
@@ -26,7 +34,7 @@ class StatRiApp extends StatelessWidget {
         '/operation': (context) => OperationPage(null),
         '/credits': (context) => Credits()
       },
-      title: 'StSpp-RI APP',
+      title: 'StApp-RI APP',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
@@ -61,7 +69,7 @@ class _SplashState extends State<Splash> {
         ),
       ),
       image: new Image.asset(
-          'images/600px-Logo_del_Corpo_Nazionale_dei_Vigili_del_Fuoco.svg.png'),
+          'images/600px-Logo_del_Corpo_Nazionale_dei_Vigili_del_Fuoco.png'),
       gradientBackground: new LinearGradient(
           colors: [Colors.white, Colors.white],
           begin: Alignment.topLeft,
