@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:splashscreen/splashscreen.dart';
-import './module_container.dart';
-
-import './credits.dart';
-import './homepage.dart';
-import './operation_page.dart';
+import 'package:stapp_ri/configuration/module_container.dart';
+import 'package:stapp_ri/ui/pages/credits.dart';
+import 'package:stapp_ri/ui/pages/homepage.dart';
+import 'package:stapp_ri/ui/pages/operation_page.dart';
 
 void main() {
   // Initialization Dependency Injection

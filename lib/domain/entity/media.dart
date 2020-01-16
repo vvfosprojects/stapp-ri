@@ -1,4 +1,5 @@
-import 'package:stapp_ri/helpers/db_values.dart';
+
+import 'package:stapp_ri/adapters/helpers/db_values.dart';
 
 class Media {
   int _id;

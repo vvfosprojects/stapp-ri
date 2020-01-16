@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stapp_ri/helpers/db_values.dart';
+import 'package:stapp_ri/adapters/helpers/db_values.dart';
 
 import 'media.dart';
 

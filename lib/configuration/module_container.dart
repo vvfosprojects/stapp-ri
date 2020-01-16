@@ -1,8 +1,9 @@
 import 'package:flutter_simple_dependency_injection/injector.dart';
-import './adapters/command_operation_service_adapter.dart';
-import './ports/command_operation_service.dart';
-import './adapters/query_operation_service_adapter.dart';
-import './ports/query_operation_service.dart';
+import 'package:stapp_ri/domain/ports/command_operation_service.dart';
+import 'package:stapp_ri/domain/ports/query_operation_service.dart';
+
+import '../adapters/command_operation_service_adapter.dart';
+import '../adapters/query_operation_service_adapter.dart';
 
 /// Dependency Injection Configuration
 class ModuleContainer {

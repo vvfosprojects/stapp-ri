@@ -1,10 +1,9 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:stapp_ri/models/media.dart';
-import '../helpers/db_values.dart';
-
-import '../ports/query_operation_service.dart';
-import '../helpers/database_helpers.dart';
-import '../models/emergency_operation.dart';
+import 'package:stapp_ri/adapters/helpers/database_helpers.dart';
+import 'package:stapp_ri/adapters/helpers/db_values.dart';
+import 'package:stapp_ri/domain/entity/emergency_operation.dart';
+import 'package:stapp_ri/domain/entity/media.dart';
+import 'package:stapp_ri/domain/ports/query_operation_service.dart';
 
 class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
 

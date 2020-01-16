@@ -1,14 +1,14 @@
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:stapp_ri/ports/command_operation_service.dart';
-import 'package:stapp_ri/widgets/confirm_action.dart';
-import 'package:stapp_ri/widgets/slidable_tile.dart';
+import 'package:stapp_ri/domain/entity/emergency_operation.dart';
+import 'package:stapp_ri/domain/entity/operation_status.dart';
+import 'package:stapp_ri/domain/ports/command_operation_service.dart';
+import 'package:stapp_ri/domain/ports/query_operation_service.dart';
 
-import './models/emergency_operation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
-import './models/operation_status.dart';
-import './ports/query_operation_service.dart';
-import './widgets/conf_drawer.dart';
+import 'package:stapp_ri/ui/widgets/conf_drawer.dart';
+import 'package:stapp_ri/ui/widgets/confirm_action.dart';
+import 'package:stapp_ri/ui/widgets/slidable_tile.dart';
 
 class Homepage extends StatefulWidget {
   Homepage({Key key, this.title}) : super(key: key);

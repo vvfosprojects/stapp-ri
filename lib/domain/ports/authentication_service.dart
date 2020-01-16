@@ -1,4 +1,5 @@
-import '../models/user.dart';
+
+import 'package:stapp_ri/domain/entity/user.dart';
 
 abstract class AuthenticationService {
 

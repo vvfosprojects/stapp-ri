@@ -4,14 +4,13 @@ import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_media_picker/multi_media_picker.dart' as multimediapicker;
-import 'package:stapp_ri/models/media_type.dart';
-import 'package:stapp_ri/widgets/audio_recorder.dart';
-import 'package:stapp_ri/widgets/confirm_action.dart';
-
-import 'models/media.dart';
-import 'models/emergency_operation.dart';
-import 'models/operation_status.dart';
-import 'ports/command_operation_service.dart';
+import 'package:stapp_ri/domain/entity/emergency_operation.dart';
+import 'package:stapp_ri/domain/entity/media.dart';
+import 'package:stapp_ri/domain/entity/media_type.dart';
+import 'package:stapp_ri/domain/entity/operation_status.dart';
+import 'package:stapp_ri/domain/ports/command_operation_service.dart';
+import 'package:stapp_ri/ui/widgets/audio_recorder.dart';
+import 'package:stapp_ri/ui/widgets/confirm_action.dart';
 
 class OperationPage extends StatefulWidget {
   final EmergencyOperation _operation;

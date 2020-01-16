@@ -1,8 +1,8 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:stapp_ri/ports/command_operation_service.dart';
-import '../helpers/db_values.dart';
-import '../helpers/database_helpers.dart';
-import '../models/emergency_operation.dart';
+import 'package:stapp_ri/adapters/helpers/database_helpers.dart';
+import 'package:stapp_ri/adapters/helpers/db_values.dart';
+import 'package:stapp_ri/domain/entity/emergency_operation.dart';
+import 'package:stapp_ri/domain/ports/command_operation_service.dart';
 
 class CommandOperationServiceAdapter<M> implements CommandOperationService {
   DatabaseHelper helper = DatabaseHelper.instance;

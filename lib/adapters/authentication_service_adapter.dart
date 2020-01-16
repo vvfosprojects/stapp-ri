@@ -1,5 +1,5 @@
-import '../models/user.dart';
-import '../ports/authentication_service.dart';
+import 'package:stapp_ri/domain/entity/user.dart';
+import 'package:stapp_ri/domain/ports/authentication_service.dart';
 
 class AuthenticationServiceAdapter implements AuthenticationService {
   @override
