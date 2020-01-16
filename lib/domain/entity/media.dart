@@ -1,5 +1,6 @@
 
 import 'package:stapp_ri/adapters/helpers/db_values.dart';
+import 'package:stapp_ri/domain/values/values.dart';
 
 class Media {
   int _id;
@@ -18,24 +19,24 @@ class Media {
   get id{ return this._id; }
 
   Media.fromMap(Map<String, dynamic> map) {
-    this._id = map[DBValues.mediaId];
-    this.name = map[DBValues.mediaName];
-    this.path = map[DBValues.mediaPath];
-    this.type = map[DBValues.mediaType];
-    this.opId = map[DBValues.mediaOpId];
+    this._id = map[Values.mediaId];
+    this.name = map[Values.mediaName];
+    this.path = map[Values.mediaPath];
+    this.type = map[Values.mediaType];
+    this.opId = map[Values.mediaOpId];
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      DBValues.mediaName: this.name,
-      DBValues.mediaPath: this.path,
-      DBValues.mediaType: this.type,
+      Values.mediaName: this.name,
+      Values.mediaPath: this.path,
+      Values.mediaType: this.type,
     };
     if (_id != null) {
-      map[DBValues.mediaId] = _id;
+      map[Values.mediaId] = _id;
     }
     if (opId != null) {
-      map[DBValues.mediaOpId] = this.opId;
+      map[Values.mediaOpId] = this.opId;
     }
     return map;
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:stapp_ri/domain/values/values.dart';
 import './db_values.dart';
 
 // singleton class to manage the database
@@ -37,25 +38,25 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
               CREATE TABLE IF NOT EXISTS ${DBValues.tableOperations} (
-                ${DBValues.opId} INTEGER PRIMARY KEY AUTOINCREMENT,
-                ${DBValues.opTitle} TEXT NOT NULL,
-                ${DBValues.opDescription} TEXT NOT NULL,
-                ${DBValues.opDate} TEXT NOT NULL,
-                ${DBValues.opStatus} TEXT NOT NULL,
-                ${DBValues.opCoordinates} TEXT
+                ${Values.opId} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${Values.opTitle} TEXT NOT NULL,
+                ${Values.opDescription} TEXT NOT NULL,
+                ${Values.opDate} TEXT NOT NULL,
+                ${Values.opStatus} TEXT NOT NULL,
+                ${Values.opCoordinates} TEXT
               )
               ''');
 
     await db.execute('''
               CREATE TABLE IF NOT EXISTS ${DBValues.tableMedia} (
-                ${DBValues.mediaId} INTEGER PRIMARY KEY AUTOINCREMENT,
-                ${DBValues.mediaOpId} INTEGER NOT NULL,
-                ${DBValues.mediaName} TEXT NOT NULL,
-                ${DBValues.mediaPath} TEXT NOT NULL,
-                ${DBValues.mediaType} TEXT NOT NULL,
+                ${Values.mediaId} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${Values.mediaOpId} INTEGER NOT NULL,
+                ${Values.mediaName} TEXT NOT NULL,
+                ${Values.mediaPath} TEXT NOT NULL,
+                ${Values.mediaType} TEXT NOT NULL,
                 CONSTRAINT fk_opId
-                FOREIGN KEY (${DBValues.mediaId})
-                REFERENCES ${DBValues.tableOperations}(${DBValues.opId})
+                FOREIGN KEY (${Values.mediaId})
+                REFERENCES ${DBValues.tableOperations}(${Values.opId})
               )
               ''');
   }

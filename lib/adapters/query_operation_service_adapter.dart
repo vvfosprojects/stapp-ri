@@ -4,6 +4,7 @@ import 'package:stapp_ri/adapters/helpers/db_values.dart';
 import 'package:stapp_ri/domain/entity/emergency_operation.dart';
 import 'package:stapp_ri/domain/entity/media.dart';
 import 'package:stapp_ri/domain/ports/query_operation_service.dart';
+import 'package:stapp_ri/domain/values/values.dart';
 
 class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
 
@@ -14,7 +15,7 @@ class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
     Database db = await helper.database;
     List<EmergencyOperation> result = List();
     List<Map> maps = await db.query(DBValues.tableOperations,
-        columns: [DBValues.opId, DBValues.opTitle, DBValues.opDescription, DBValues.opDate, DBValues.opStatus, DBValues.opCoordinates]);
+        columns: [Values.opId, Values.opTitle, Values.opDescription, Values.opDate, Values.opStatus, Values.opCoordinates]);
     if (maps.length > 0) {
       for(var emerop in maps){
         EmergencyOperation eo = EmergencyOperation.fromMap(emerop);
@@ -31,8 +32,8 @@ class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
   Future<EmergencyOperation> read(int id) async {
     Database db = await helper.database;
     List<Map> maps = await db.query(DBValues.tableOperations,
-        columns: [DBValues.opId, DBValues.opTitle, DBValues.opDescription, DBValues.opDate, DBValues.opStatus, DBValues.opCoordinates],
-        where: '${DBValues.opId} = ?',
+        columns: [Values.opId, Values.opTitle, Values.opDescription, Values.opDate, Values.opStatus, Values.opCoordinates],
+        where: '${Values.opId} = ?',
         whereArgs: [id]);
     if (maps.length > 0) {  
         EmergencyOperation eo = EmergencyOperation.fromMap(maps.first);
@@ -48,8 +49,8 @@ class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
     Database db = await helper.database;
     List<Media> result = List<Media>();
     List<Map> maps = await db.query(DBValues.tableMedia,
-        columns: [DBValues.mediaId, DBValues.mediaName, DBValues.mediaPath, DBValues.mediaOpId, DBValues.mediaType],
-        where: '${DBValues.mediaOpId} = ?',
+        columns: [Values.mediaId, Values.mediaName, Values.mediaPath, Values.mediaOpId, Values.mediaType],
+        where: '${Values.mediaOpId} = ?',
         whereArgs: [id]);
     if (maps.length > 0) {
       maps.forEach((map) => {

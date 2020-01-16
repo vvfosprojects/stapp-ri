@@ -3,6 +3,7 @@ import 'package:stapp_ri/adapters/helpers/database_helpers.dart';
 import 'package:stapp_ri/adapters/helpers/db_values.dart';
 import 'package:stapp_ri/domain/entity/emergency_operation.dart';
 import 'package:stapp_ri/domain/ports/command_operation_service.dart';
+import 'package:stapp_ri/domain/values/values.dart';
 
 class CommandOperationServiceAdapter<M> implements CommandOperationService {
   DatabaseHelper helper = DatabaseHelper.instance;
@@ -11,9 +12,9 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
   Future<int> delete(id) async {
     Database db = await helper.database;
     int result = await db.delete(DBValues.tableOperations,
-        where: '${DBValues.opId} = ?', whereArgs: [id]);
+        where: '${Values.opId} = ?', whereArgs: [id]);
     await db.delete(DBValues.tableMedia,
-        where: '${DBValues.mediaOpId} = ?', whereArgs: [id]);
+        where: '${Values.mediaOpId} = ?', whereArgs: [id]);
     return result;
   }
 
@@ -22,12 +23,12 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
     Database db = await helper.database;
     EmergencyOperation emOp = m as EmergencyOperation;
     int opId = await db.update(DBValues.tableOperations, m.toMap(),
-        where: '${DBValues.opId} = ?', whereArgs: [m.id]);
+        where: '${Values.opId} = ?', whereArgs: [m.id]);
     var batch = db.batch();
     emOp.media.forEach((m) {
       m.opId = opId;
       if(m.id!=null){
-        batch.update(DBValues.tableMedia, m.toMap(), where: '${DBValues.mediaId} = ?',
+        batch.update(DBValues.tableMedia, m.toMap(), where: '${Values.mediaId} = ?',
         whereArgs: [m.id]);
       } else {
         batch.insert(DBValues.tableMedia, m.toMap());
