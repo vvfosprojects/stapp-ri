@@ -1,4 +1,4 @@
-import '../../domain/entity/emergency_operation.dart';
+import '../../domain/entities/emergency_operation.dart';
 import '../../domain/values/values.dart';
 
 class EmergencyOperationModel extends EmergencyOperation {

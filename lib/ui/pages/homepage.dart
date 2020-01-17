@@ -1,6 +1,6 @@
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:stapp_ri/domain/entity/emergency_operation.dart';
-import 'package:stapp_ri/domain/entity/operation_status.dart';
+import 'package:stapp_ri/domain/entities/emergency_operation.dart';
+import 'package:stapp_ri/domain/entities/operation_status.dart';
 import 'package:stapp_ri/domain/ports/command_operation_service.dart';
 import 'package:stapp_ri/domain/ports/query_operation_service.dart';
 

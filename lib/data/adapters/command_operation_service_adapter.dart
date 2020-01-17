@@ -1,5 +1,5 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:stapp_ri/domain/entity/emergency_operation.dart';
+import 'package:stapp_ri/domain/entities/emergency_operation.dart';
 import 'package:stapp_ri/domain/ports/command_operation_service.dart';
 import 'package:stapp_ri/domain/values/values.dart';
 import 'package:stapp_ri/data/helpers/database_helpers.dart';

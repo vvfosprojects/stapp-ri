@@ -1,4 +1,4 @@
-import 'package:stapp_ri/domain/entity/emergency_operation.dart';
+import 'package:stapp_ri/domain/entities/emergency_operation.dart';
 
 abstract class QueryOperationService<M> {
 

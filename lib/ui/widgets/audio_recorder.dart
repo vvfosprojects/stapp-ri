@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
-import 'package:stapp_ri/domain/entity/media.dart';
-import 'package:stapp_ri/domain/entity/media_type.dart';
+import 'package:stapp_ri/domain/entities/media.dart';
+import 'package:stapp_ri/domain/entities/media_type.dart';
 
 class AudioRecorder extends StatefulWidget {
   final Function callback;
