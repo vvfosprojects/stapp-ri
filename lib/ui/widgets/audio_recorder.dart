@@ -8,13 +8,9 @@ import 'package:stapp_ri/domain/entity/media.dart';
 import 'package:stapp_ri/domain/entity/media_type.dart';
 
 class AudioRecorder extends StatefulWidget {
-  Function _callback;
+  final Function callback;
 
-  AudioRecorder();
-
-  AudioRecorder.withCallback({callback}){
-    this._callback = callback;
-  }
+  AudioRecorder({@required this.callback});
 
   @override
   _AudioRecorderState createState() => new _AudioRecorderState();
@@ -68,7 +64,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
       _media.path = path;
       _opAudioFiles.add(_media);
-      widget._callback(_opAudioFiles);
+      widget.callback(_opAudioFiles);
       print('startRecorder: ${_media.path}');
 
       _recorderSubscription = flutterSound.onRecorderStateChanged.listen((e) {
@@ -135,10 +131,12 @@ class _AudioRecorderState extends State<AudioRecorder> {
               e.currentPosition.toInt(),
               isUtc: true);
           String txt = DateFormat('mm:ss:SS').format(date);
-          this.setState(() {
-            this._isPlaying = true;
-            this._playerTxt = txt.substring(0, 8);
-          });
+          if (mounted) {
+            this.setState(() {
+              this._isPlaying = true;
+              this._playerTxt = txt.substring(0, 8);
+            });
+          }
         }
       });
     } catch (err) {
@@ -327,10 +325,10 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   Widget _tile(Media media) => ListTile(
         title: Text(media.name),
-        subtitle: Platform.isAndroid ? Text(media.path): Text(''),
+        subtitle: Platform.isAndroid ? Text(media.path) : Text(''),
         leading: Icon(Icons.audiotrack),
         onTap: () => _selectFileToPlay(media),
-        selected: media.path==_media.path,
+        selected: media.path == _media.path,
       );
 
   void _selectFileToPlay(Media media) {

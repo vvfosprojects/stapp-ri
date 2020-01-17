@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:stapp_ri/adapters/helpers/string_utils.dart';
+import 'package:stapp_ri/data/helpers/string_utils.dart';
 import 'package:stapp_ri/domain/entity/emergency_operation.dart';
 import 'package:stapp_ri/domain/entity/operation_status.dart';
 import 'package:stapp_ri/ui/pages/operation_page.dart';

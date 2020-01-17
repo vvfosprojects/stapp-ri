@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:stapp_ri/adapters/helpers/database_helpers.dart';
-import 'package:stapp_ri/adapters/helpers/db_values.dart';
+import 'package:stapp_ri/data/helpers/database_helpers.dart';
+import 'package:stapp_ri/data/helpers/db_values.dart';
+import 'package:stapp_ri/data/models/emergency_operation_model.dart';
 import 'package:stapp_ri/domain/entity/emergency_operation.dart';
 import 'package:stapp_ri/domain/entity/media.dart';
 import 'package:stapp_ri/domain/ports/query_operation_service.dart';
@@ -18,7 +19,7 @@ class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
         columns: [Values.opId, Values.opTitle, Values.opDescription, Values.opDate, Values.opStatus, Values.opCoordinates]);
     if (maps.length > 0) {
       for(var emerop in maps){
-        EmergencyOperation eo = EmergencyOperation.fromMap(emerop);
+        EmergencyOperationModel eo = EmergencyOperationModel.fromMap(emerop);
         if(eo.media == null) eo.media = List<Media>();
         List<Media> medias =  await readMedia(eo.id);
         if(medias != null) eo.media.addAll(medias);
@@ -36,7 +37,7 @@ class QueryOperationServiceAdapter<M> implements QueryOperationService<M> {
         where: '${Values.opId} = ?',
         whereArgs: [id]);
     if (maps.length > 0) {  
-        EmergencyOperation eo = EmergencyOperation.fromMap(maps.first);
+        EmergencyOperationModel eo = EmergencyOperationModel.fromMap(maps.first);
         if(eo.media == null) eo.media = List<Media>();
         List<Media> medias =  await readMedia(eo.id);
         eo.media.addAll(medias);

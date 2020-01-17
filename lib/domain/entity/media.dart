@@ -1,5 +1,4 @@
 
-import 'package:stapp_ri/adapters/helpers/db_values.dart';
 import 'package:stapp_ri/domain/values/values.dart';
 
 class Media {
