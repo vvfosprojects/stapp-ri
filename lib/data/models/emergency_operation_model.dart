@@ -1,9 +1,15 @@
 import '../../domain/entities/emergency_operation.dart';
-import '../../domain/values/values.dart';
 
 class EmergencyOperationModel extends EmergencyOperation {
+  // Operations Table and attributes
+  static const String opId = "id";
+  static const String opTitle = "title";
+  static const String opDescription = "description";
+  static const String opDate = "date";
+  static const String opCoordinates = "coordinates";
+  static const String opStatus = "status";
 
-  EmergencyOperationModel.of(EmergencyOperation emergencyOperation){
+  EmergencyOperationModel.of(EmergencyOperation emergencyOperation) {
     this.id = emergencyOperation.id;
     this.title = emergencyOperation.title;
     this.description = emergencyOperation.description;
@@ -14,29 +20,28 @@ class EmergencyOperationModel extends EmergencyOperation {
   }
 
   EmergencyOperationModel.fromMap(Map<String, dynamic> map) {
-    this.id = map[Values.opId];
-    this.title = map[Values.opTitle];
-    this.description = map[Values.opDescription];
-    this.date = DateTime.parse(map[Values.opDate]);
-    this.coordinates = map[Values.opCoordinates];
-    this.status = map[Values.opStatus];
+    this.id = map[opId];
+    this.title = map[opTitle];
+    this.description = map[opDescription];
+    this.date = DateTime.parse(map[opDate]);
+    this.coordinates = map[opCoordinates];
+    this.status = map[opStatus];
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      Values.opTitle: this.title,
-      Values.opDescription: this.description,
-      Values.opDate: this.date.toIso8601String(),
-      Values.opCoordinates: this.coordinates,
-      Values.opStatus: this.status,
+      opTitle: this.title,
+      opDescription: this.description,
+      opDate: this.date.toIso8601String(),
+      opCoordinates: this.coordinates,
+      opStatus: this.status,
     };
     if (id != null) {
-      map[Values.opId] = id;
+      map[opId] = id;
     }
     if (coordinates != null) {
-      map[Values.opCoordinates] = super.coordinates;
+      map[opCoordinates] = super.coordinates;
     }
     return map;
   }
-
 }

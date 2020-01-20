@@ -8,7 +8,7 @@ import 'package:stapp_ri/domain/entities/emergency_operation.dart';
 import 'package:stapp_ri/domain/entities/media.dart';
 import 'package:stapp_ri/domain/entities/media_type.dart';
 import 'package:stapp_ri/domain/entities/operation_status.dart';
-import 'package:stapp_ri/domain/ports/command_operation_service.dart';
+import 'package:stapp_ri/domain/ports/save_em_op_usecase_port.dart';
 import 'package:stapp_ri/ui/widgets/audio_recorder.dart';
 import 'package:stapp_ri/ui/widgets/confirm_action.dart';
 
@@ -428,9 +428,12 @@ class _OperationPageState extends State<OperationPage> {
                               onPressed: () {},
                               child: Column(
                                 children: <Widget>[
-                                  Text((snapshot.data[index].type
-                                      .replaceAll("MediaType.", "")), style: TextStyle(fontSize: 10),),
-                                      Icon(Icons.flag),
+                                  Text(
+                                    (snapshot.data[index].type
+                                        .replaceAll("MediaType.", "")),
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  Icon(Icons.flag),
                                 ],
                               ),
                             ),
@@ -512,25 +515,21 @@ class _OperationPageState extends State<OperationPage> {
 
   void saveOperation(context, {showSnackBar}) async {
     if (_formKey.currentState.validate()) {
-      if (this.currentOperation.id != null) {
-        injector
-            .get<CommandOperationService>()
-            .update(this.currentOperation)
-            .then((id) {
-          print("Salvataggio operation id: $id");
+      try {
+        await injector.get<SaveEmOpUsecasePort>()
+            .save(this.currentOperation)
+            .then((savedOp) {
+          setState(() {
+            this.currentOperation = savedOp;
+          });
+          _isModified = false;
+          if (showSnackBar ?? false) {
+            Scaffold.of(context).showSnackBar(
+                SnackBar(content: Text('Salvataggio effettuato!')));
+          }
         });
-      } else {
-        injector
-            .get<CommandOperationService>()
-            .insert(this.currentOperation)
-            .then((id) {
-          print("Inserimento operation id: $id");
-        });
-      }
-      _isModified = false;
-      if (showSnackBar ?? false) {
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('Salvataggio effettuato!')));
+      } catch (error) {
+        print(error);
       }
     }
   }

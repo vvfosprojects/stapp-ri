@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:stapp_ri/domain/values/values.dart';
-import './db_values.dart';
+import 'package:stapp_ri/data/helpers/db_values.dart';
+import 'package:stapp_ri/data/models/emergency_operation_model.dart';
+import 'package:stapp_ri/data/models/media_model.dart';
 
 // singleton class to manage the database
 class DatabaseHelper {
@@ -38,25 +39,25 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
               CREATE TABLE IF NOT EXISTS ${DBValues.tableOperations} (
-                ${Values.opId} INTEGER PRIMARY KEY AUTOINCREMENT,
-                ${Values.opTitle} TEXT NOT NULL,
-                ${Values.opDescription} TEXT NOT NULL,
-                ${Values.opDate} TEXT NOT NULL,
-                ${Values.opStatus} TEXT NOT NULL,
-                ${Values.opCoordinates} TEXT
+                ${EmergencyOperationModel.opId} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${EmergencyOperationModel.opTitle} TEXT NOT NULL,
+                ${EmergencyOperationModel.opDescription} TEXT NOT NULL,
+                ${EmergencyOperationModel.opDate} TEXT NOT NULL,
+                ${EmergencyOperationModel.opStatus} TEXT NOT NULL,
+                ${EmergencyOperationModel.opCoordinates} TEXT
               )
               ''');
 
     await db.execute('''
               CREATE TABLE IF NOT EXISTS ${DBValues.tableMedia} (
-                ${Values.mediaId} INTEGER PRIMARY KEY AUTOINCREMENT,
-                ${Values.mediaOpId} INTEGER NOT NULL,
-                ${Values.mediaName} TEXT NOT NULL,
-                ${Values.mediaPath} TEXT NOT NULL,
-                ${Values.mediaType} TEXT NOT NULL,
+                ${MediaModel.mediaId} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${MediaModel.mediaOpId} INTEGER NOT NULL,
+                ${MediaModel.mediaName} TEXT NOT NULL,
+                ${MediaModel.mediaPath} TEXT NOT NULL,
+                ${MediaModel.mediaType} TEXT NOT NULL,
                 CONSTRAINT fk_opId
-                FOREIGN KEY (${Values.mediaId})
-                REFERENCES ${DBValues.tableOperations}(${Values.opId})
+                FOREIGN KEY (${MediaModel.mediaId})
+                REFERENCES ${DBValues.tableOperations}(${EmergencyOperationModel.opId})
               )
               ''');
   }
