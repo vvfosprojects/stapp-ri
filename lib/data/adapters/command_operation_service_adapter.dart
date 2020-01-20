@@ -29,13 +29,13 @@ class CommandOperationServiceAdapter<M> implements CommandOperationService {
         whereArgs: [emOp.id]).then((id) {
       var batch = db.batch();
       emOp.media.forEach((media) {
-        MediaModel m = MediaModel.of(media);
-        m.opId = id;
-        if (m.id != null) {
-          batch.update(DBValues.tableMedia, m.toMap(),
-              where: '${MediaModel.mediaId} = ?', whereArgs: [m.id]);
+        MediaModel mm = MediaModel.of(media);
+        mm.opId = emOp.id;
+        if (mm.id != null) {
+          batch.update(DBValues.tableMedia, mm.toMap(),
+              where: '${MediaModel.mediaId} = ?', whereArgs: [mm.id]);
         } else {
-          batch.insert(DBValues.tableMedia, m.toMap());
+          batch.insert(DBValues.tableMedia, mm.toMap());
         }
       });
       batch.commit();

@@ -471,23 +471,14 @@ class _OperationPageState extends State<OperationPage> {
                 Icons.photo_library,
                 color: Colors.black54,
               ),
-              onPressed: () {
-                getImages();
-              },
+              onPressed: getImages,
             ),
             FlatButton(
               child: Icon(
                 Icons.mic,
                 color: Colors.black54,
               ),
-              onPressed: () {
-                showDialog(
-                  child: AudioRecorder(
-                    callback: audioCallback,
-                  ),
-                  context: context,
-                );
-              },
+              onPressed: showAudioRecorderDialog,
             ),
             FlatButton(
               child: Icon(
@@ -513,10 +504,20 @@ class _OperationPageState extends State<OperationPage> {
     );
   }
 
+  void showAudioRecorderDialog() {
+    showDialog(
+      child: AudioRecorder(
+        callback: audioCallback,
+      ),
+      context: context,
+    );
+  }
+
   void saveOperation(context, {showSnackBar}) async {
     if (_formKey.currentState.validate()) {
       try {
-        await injector.get<SaveEmOpUsecasePort>()
+        await injector
+            .get<SaveEmOpUsecasePort>()
             .save(this.currentOperation)
             .then((savedOp) {
           setState(() {
